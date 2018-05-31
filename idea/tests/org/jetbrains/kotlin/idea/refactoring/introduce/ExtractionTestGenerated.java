@@ -3758,6 +3758,11 @@ public class ExtractionTestGenerated extends AbstractExtractionTest {
             KotlinTestUtils.runTest(this::doIntroduceTypeAliasTest, TargetBackend.ANY, testDataFilePath);
         }
 
+        @TestMetadata("aliasForNestedClass.kt")
+        public void testAliasForNestedClass() throws Exception {
+            runTest("idea/testData/refactoring/introduceTypeAlias/aliasForNestedClass.kt");
+        }
+
         public void testAllFilesPresentInIntroduceTypeAlias() throws Exception {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/refactoring/introduceTypeAlias"), Pattern.compile("^(.+)\\.(kt|kts)$"), TargetBackend.ANY, true);
         }
