@@ -68,7 +68,9 @@ class MoveKotlinDeclarationsHandler : MoveHandlerDelegate() {
     ): Boolean {
         if (!CommonRefactoringUtil.checkReadOnlyStatusRecursively(project, elements.toList(), true)) return false
 
-        val container = getUniqueContainer(elements)
+        val container = getUniqueContainer(elements)?.let {
+            if (it is KtBlockExpression) (it.parent as? KtScript)?.parent as? KtFile else it
+        }
         if (container == null) {
             CommonRefactoringUtil.showErrorHint(
                     project, editor, "All declarations must belong to the same directory or class", MOVE_DECLARATIONS, null
