@@ -80,19 +80,24 @@ class DependenciesCollector {
 
     private fun Collection<IrSymbol>.addTopLevelDeclarations() {
         forEach {
-            addTopLevelDescriptor(getTopLevelDeclaration(it.descriptor))
+            getTopLevelDeclaration(it.descriptor)?.let { addTopLevelDescriptor(it) }
         }
     }
 
-    private fun getTopLevelDeclaration(descriptor: DeclarationDescriptor): DeclarationDescriptor {
+    private fun getTopLevelDeclaration(descriptor: DeclarationDescriptor): DeclarationDescriptor? {
         val containingDeclaration = descriptor.containingDeclaration
         return when (containingDeclaration) {
             is PackageFragmentDescriptor -> descriptor
             is ClassDescriptor -> getTopLevelDeclaration(containingDeclaration)
             else ->
-                if (descriptor is PropertyAccessorDescriptor && descriptor.kind == CallableMemberDescriptor.Kind.SYNTHESIZED && containingDeclaration is ModuleDescriptor) {
+                if (descriptor is PropertyAccessorDescriptor &&
+                    descriptor.kind == CallableMemberDescriptor.Kind.SYNTHESIZED &&
+                    containingDeclaration is ModuleDescriptor
+                ) {
                     //property accessors syntax for java getter/setters generate syntetic accessor in Module
-                    containingDeclaration
+                    null
+//                    (descriptor.correspondingProperty.extensionReceiverParameter!!.value as ExtensionReceiver).type.constructor.declarationDescriptor as ClassDescriptor
+//                    classSymbolTable.
                 } else {
                     throw AssertionError("Package or class expected: $containingDeclaration; for $descriptor")
                 }
